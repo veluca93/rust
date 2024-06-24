@@ -441,7 +441,7 @@ extern "C" LLVMTargetMachineRef LLVMRustCreateTargetMachine(
   Options.FunctionSections = FunctionSections;
   Options.UniqueSectionNames = UniqueSectionNames;
   Options.MCOptions.AsmVerbose = AsmComments;
-  Options.MCOptions.PreserveAsmComments = AsmComments;
+  Options.MCOptions.PreserveAsmComments = true;
   Options.MCOptions.ABIName = ABIStr;
   if (SplitDwarfFile) {
       Options.MCOptions.SplitDwarfFile = SplitDwarfFile;

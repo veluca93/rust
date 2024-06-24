@@ -5,6 +5,7 @@
 //! item.
 
 use crate::{errors, fluent_generated as fluent};
+use core::panic;
 use rustc_ast::{ast, AttrKind, AttrStyle, Attribute, LitKind};
 use rustc_ast::{MetaItemKind, MetaItemLit, NestedMetaItem};
 use rustc_data_structures::fx::FxHashMap;
@@ -672,7 +673,29 @@ impl<'tcx> CheckAttrVisitor<'tcx> {
                 self.inline_attr_str_error_with_macro_def(hir_id, attr, "target_feature");
                 true
             }
+            Target::Struct => {
+                let ty = self.tcx.hir_node(hir_id).expect_item();
+                match ty.kind {
+                    ItemKind::Struct(data, _) => {
+                        if data.fields().len() == 0 {
+                            true
+                        } else {
+                            // TODO: proper error message.
+                            self.dcx().emit_err(errors::AttrShouldBeAppliedToFn {
+                                attr_span: attr.span,
+                                defn_span: span,
+                                on_crate: hir_id == CRATE_HIR_ID,
+                            });
+                            false
+                        }
+                    }
+                    _ => {
+                        panic!("Target::Struct for a non-struct");
+                    }
+                }
+            }
             _ => {
+                // TODO: proper error message.
                 self.dcx().emit_err(errors::AttrShouldBeAppliedToFn {
                     attr_span: attr.span,
                     defn_span: span,

@@ -1129,6 +1129,7 @@ fn adt_def(tcx: TyCtxt<'_>, def_id: LocalDefId) -> ty::AdtDef<'_> {
     } else {
         tcx.repr_options_of_def(def_id)
     };
+    // TODO: parse target features there and add them to the ADT.
     let (kind, variants) = match &item.kind {
         ItemKind::Enum(def, _) => {
             let mut distance_from_explicit = 0;
